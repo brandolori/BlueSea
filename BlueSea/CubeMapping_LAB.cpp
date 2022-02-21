@@ -22,6 +22,9 @@ using namespace std;
 int width = 1480;
 int height = 800;
 float ycam = 2;
+
+unsigned int timestep = 1000 / 60;
+
 //Inizializzazione Camera
 static int selected_obj = 0;
 unsigned int idTex, cubemapTexture, texture, texture1;
@@ -66,6 +69,7 @@ vec3 slate_ambient = { 0.02, 0.02, 0.02 }, slate_diffuse = { 0.1, 0.1, 0.1 }, sl
 mat4 Projection, Model, View;
 
 float angolo = 0;
+float currentTime = 0;
 
 LightShaderUniform light_unif = {};
 
@@ -85,7 +89,6 @@ vector<string> faces
 	  "front.jpg",
 	  "back.jpg"
 };
-
 
 void genera_texture(void)
 {
@@ -150,11 +153,9 @@ void genera_texture(void)
 		printf("Errore nel caricare la texture 2\n");
 	}
 	stbi_image_free(data);
-
-
 }
 
-unsigned int loadCubemap(vector<std::string> faces)
+unsigned int loadCubemap(vector<string> faces)
 {
 	//Creazione di 3d cubemap
 	unsigned int textureID;
@@ -188,7 +189,6 @@ unsigned int loadCubemap(vector<std::string> faces)
 		}
 	}
 
-
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -198,12 +198,6 @@ unsigned int loadCubemap(vector<std::string> faces)
 	return textureID;
 }
 
-void update_cubo(int a)
-{
-	angolo += 0.1;
-	glutTimerFunc(10, update_cubo, 0);
-	glutPostRedisplay();
-}
 
 void crea_VAO_obj(Mesh* mesh)
 {
@@ -279,6 +273,15 @@ unsigned int la, ld, ls, lp, lsh, leye, lscelta;
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 
+void update(int a)
+{
+	cout << "current time" << currentTime << endl;
+	currentTime += timestep;
+	glUniform1f(loc_time, currentTime / 1000);
+	glutTimerFunc(timestep, update, 0);
+	glutPostRedisplay();
+}
+
 vec3 getTrackBallPoint(float x, float y)
 {
 	//La trackball virtuale può fornire un'interfaccia utente intuitiva 
@@ -299,7 +302,6 @@ void moveCameraForeward()
 {
 	ViewSetup.direction = ViewSetup.target - ViewSetup.position;
 	ViewSetup.position += ViewSetup.direction * cameraSpeed;
-
 }
 
 void moveCameraBack()
@@ -357,7 +359,7 @@ void INIT_VAO(void)
 	obj1.material = MaterialType::RED_PLASTIC;
 	objectsP.push_back(obj1);
 	objectsP[0].name = "SFERA";
-	objectsP[0].sceltaS = 6;
+	objectsP[0].sceltaS = 2;
 	objectsP[0].translation = vec3(0.0, 2.0, 0.0);
 	objectsP[0].scale = vec3(3.0, 3.0, 3.0);
 
@@ -370,59 +372,9 @@ void INIT_VAO(void)
 	obj2.material = MaterialType::EMERALD;
 	objectsP.push_back(obj2);
 	objectsP[1].name = "PIANO";
-	objectsP[1].sceltaS = 1;
-
-	//Creo oggetto cono
-	MeshP cono = {};
-	crea_cono(cono);
-	crea_VAO_Vector(&cono);
-	ObjectP obj3 = {};
-	obj3.mesh = cono;
-	obj3.material = MaterialType::RED_PLASTIC;
-	objectsP.push_back(obj3);
-	objectsP[2].name = "CONO";
-	objectsP[2].sceltaS = 5;
-	objectsP[2].translation = vec3(-7, 5.0, 0.0);
-	objectsP[2].scale = vec3(5, 6, 5);
-
-	//Creo oggetto asta
-	MeshP asta = {};
-	crea_cilindro(asta);
-	crea_VAO_Vector(&asta);
-	ObjectP obj4 = {};
-	obj4.mesh = asta;
-	obj4.material = MaterialType::RED_PLASTIC;
-	objectsP.push_back(obj4);
-	objectsP[3].name = "ASTA";
-	objectsP[3].sceltaS = 1;
-	objectsP[3].translation = vec3(-16, 0, 0);
-	objectsP[3].scale = vec3(.2, 8, .2);
-
-	//Creo oggetto Bandiera
-	MeshP bandiera = {};
-	crea_piano_suddiviso(bandiera);
-	crea_VAO_Vector(&bandiera);
-	ObjectP obj5 = {};
-	obj5.mesh = piano;
-	obj5.material = MaterialType::EMERALD;
-	objectsP.push_back(obj5);
-	objectsP[4].name = "BANDIERA";
-	objectsP[4].sceltaS = 4;
-	objectsP[4].translation = vec3(-16, 7, 0);
-	objectsP[4].scale = vec3(4, 1, 3);
-
-	//Creo oggetto Pannello
-	MeshP pannello = {};
-	crea_piano(pannello);
-	crea_VAO_Vector(&pannello);
-	ObjectP obj5_1 = {};
-	obj5_1.mesh = pannello;
-	obj5_1.material = MaterialType::EMERALD;
-	objectsP.push_back(obj5_1);
-	objectsP[5].name = "PANNELLO";
-	objectsP[5].sceltaS = 5;
-	objectsP[5].translation = vec3(-2, 10, 0);
-	objectsP[5].scale = vec3(5, 1, 5);
+	objectsP[1].sceltaS = 3;
+	objectsP[1].translation = vec3(-500, 0, -500);
+	objectsP[1].scale = vec3(1000, 1, 1000);
 
 	// Crea skybox
 	MeshP skymesh = {};
@@ -613,7 +565,7 @@ void drawScene(void)
 
 	for (auto& obj : objectsP)
 	{
-		//rendo attivo il VAO dell'oggetto 0, la sfera
+		//rendo attivo il VAO dell'oggetto
 		glUniform1i(lscelta, obj.sceltaS);
 		glUniform3f(Vec_cameraPos, ViewSetup.position.x, ViewSetup.position.y, ViewSetup.position.z);
 		glUniformMatrix4fv(MatrixProj, 1, GL_FALSE, value_ptr(Projection));
@@ -629,6 +581,7 @@ void drawScene(void)
 		//definisco le matrici di Modellazione
 		Model = mat4(1.0);
 		Model = translate(Model, obj.translation);
+		Model = rotate(Model, obj.rotation, vec3(0, 1, 0));
 		Model = scale(Model, obj.scale);
 
 		//Passo al Vertex Shader il puntatore alla matrice Model, che sarà associata alla variabile Uniform mat4 Projection
@@ -675,7 +628,7 @@ int main(int argc, char* argv[])
 	glutMotionFunc(mouseActiveMotion); // Evento tasto premuto
 	glutMouseFunc(mouseClick);
 	glutMouseWheelFunc(mouseWheel);
-	glutTimerFunc(10, update_cubo, 0);
+	glutTimerFunc(timestep, update, 0);
 	glewExperimental = GL_TRUE;
 	glewInit();
 

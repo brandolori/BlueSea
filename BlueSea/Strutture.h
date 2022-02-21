@@ -84,6 +84,7 @@ typedef struct {
 	int sceltaS;
 	vec3 translation;
 	vec3 scale;
+	float rotation;
 } ObjectP;
 
 typedef struct {

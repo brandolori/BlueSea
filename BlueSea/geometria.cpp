@@ -223,7 +223,6 @@ void crea_cilindro(MeshP& cilindro)
 
 void crea_piano_suddiviso(MeshP& piano_suddiviso)
 {
-
 	int N = 256;
 
 	int i, j;
