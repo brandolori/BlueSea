@@ -40,12 +40,12 @@ void crea_sfera(vec3 centro, vec3 raggio, MeshP& sfera)
 			float y = centro.y + raggio.y * cosf(phi);
 			float z = centro.z + raggio.z * sinf(theta) * sinf(phi);
 
-			vec3 val = { x,y,z};
+			vec3 val = { x,y,z };
 			// Push Back Vertex Data
 			sfera.vertices.push_back(val);
 			sfera.normals.push_back(normalize(vec3(x, y, z)));
-			s=U;
-			t=V;
+			s = U;
+			t = V;
 			sfera.texCoords.push_back(vec2(s, t));
 		}
 	}
@@ -94,7 +94,7 @@ void crea_toro(MeshP& toro)
 
 
 			// Push Back Vertex Data
-			toro.vertices.push_back(vec3(x,y,z));
+			toro.vertices.push_back(vec3(x, y, z));
 			toro.normals.push_back(normalize(vec3(sin(phi) * cos(theta), cos(phi), sin(theta) * sin(phi))));
 			s = U;
 			t = V;
@@ -145,7 +145,7 @@ void crea_cono(MeshP& cono)
 
 
 			// Push Back Vertex Data
-			cono.vertices.push_back(vec3(x,y,z));
+			cono.vertices.push_back(vec3(x, y, z));
 			cono.normals.push_back(normalize(vec3(cos(theta) / sqrt(2.0f), -1 / sqrt(2.0f), sin(theta) / sqrt(2.0f))));
 
 			s = U;
@@ -196,7 +196,7 @@ void crea_cilindro(MeshP& cilindro)
 
 
 			// Push Back Vertex Data
-			cilindro.vertices.push_back(vec3(x,y,z));
+			cilindro.vertices.push_back(vec3(x, y, z));
 			cilindro.normals.push_back(normalize(vec3(cos(theta), 0, sin(theta))));
 			s = U;
 			t = V;
@@ -235,7 +235,7 @@ void crea_piano_suddiviso(MeshP& piano_suddiviso)
 			piano_suddiviso.vertices.push_back(vec3((float)i / N, 0.0f, (float)j / N));
 			piano_suddiviso.normals.push_back(vec3(0.0, 1.0, 0.0));
 			piano_suddiviso.texCoords.push_back(vec2((float)j / N, (float)i / N));
-	    }
+		}
 	}
 	int cont = -1;
 
@@ -259,6 +259,87 @@ void crea_piano_suddiviso(MeshP& piano_suddiviso)
 
 	}
 
- }
+}
 
- 
+
+void crea_cubo(MeshP& mesh)
+{
+	mesh.vertices.push_back(vec3(-1.0, -1.0, 1.0));
+	mesh.vertices.push_back(vec3(1.0, -1.0, 1.0));
+	mesh.vertices.push_back(vec3(1.0, 1.0, 1.0));
+	mesh.vertices.push_back(vec3(-1.0, 1.0, 1.0));
+	// back
+	mesh.vertices.push_back(vec3(-1.0, -1.0, -1.0));
+	mesh.vertices.push_back(vec3(1.0, -1.0, -1.0));
+	mesh.vertices.push_back(vec3(1.0, 1.0, -1.0));
+	mesh.vertices.push_back(vec3(-1.0, 1.0, -1.0));
+
+	mesh.indici.push_back(0); mesh.indici.push_back(1); mesh.indici.push_back(2);
+	mesh.indici.push_back(2); mesh.indici.push_back(3); mesh.indici.push_back(0);
+	mesh.indici.push_back(1); mesh.indici.push_back(5); mesh.indici.push_back(6);
+	mesh.indici.push_back(6); mesh.indici.push_back(2); mesh.indici.push_back(1);
+	mesh.indici.push_back(7); mesh.indici.push_back(6); mesh.indici.push_back(5);
+	mesh.indici.push_back(5); mesh.indici.push_back(4); mesh.indici.push_back(7);
+	mesh.indici.push_back(4); mesh.indici.push_back(0); mesh.indici.push_back(3);
+	mesh.indici.push_back(3); mesh.indici.push_back(7); mesh.indici.push_back(4);
+	mesh.indici.push_back(4); mesh.indici.push_back(5); mesh.indici.push_back(1);
+	mesh.indici.push_back(1); mesh.indici.push_back(0); mesh.indici.push_back(4);
+	mesh.indici.push_back(3); mesh.indici.push_back(2); mesh.indici.push_back(6);
+	mesh.indici.push_back(6); mesh.indici.push_back(7); mesh.indici.push_back(3);
+
+	mesh.normals.push_back(normalize(vec3(0, 0, 1)));
+	mesh.normals.push_back(normalize(vec3(0, 0, 1)));
+	mesh.normals.push_back(normalize(vec3(0, 0, 1)));
+	mesh.normals.push_back(normalize(vec3(0, 0, 1)));
+	mesh.normals.push_back(normalize(vec3(0, 0, -1)));
+	mesh.normals.push_back(normalize(vec3(0, 0, -1)));
+	mesh.normals.push_back(normalize(vec3(0, 0, -1)));
+	mesh.normals.push_back(normalize(vec3(0, 0, -1)));
+
+}
+void crea_piramide(vector<Point>& vertices, vector <GLuint>& index_vertices)
+{
+	vertices.push_back({ -1.0, 0.0,  1.0,1.0, 0.5, 0.0, 1.0 });
+
+	vertices.push_back({ 1.0, 0.0,  1.0,0.5, 1.0, 0.0,1.0 });
+
+	vertices.push_back({ 1.0, 0.0, -1.0, 0.0, 0.5, 1.0,1.0 });
+
+	vertices.push_back({ -1.0,  0.0,  -1.0, 1.0, 1.0, 1.0,1.0 });
+	// Apice piramide
+	vertices.push_back({ 0.0,1.0,0.0,1.0, 0.5, 0.0,1.0 });
+
+
+	index_vertices.push_back(0); index_vertices.push_back(1); index_vertices.push_back(2);
+	index_vertices.push_back(0); index_vertices.push_back(2); index_vertices.push_back(3);
+
+	index_vertices.push_back(0); index_vertices.push_back(4); index_vertices.push_back(3);
+	index_vertices.push_back(0); index_vertices.push_back(1); index_vertices.push_back(4);
+
+	index_vertices.push_back(3); index_vertices.push_back(2); index_vertices.push_back(4);
+	index_vertices.push_back(1); index_vertices.push_back(2); index_vertices.push_back(4);
+}
+
+void crea_piano(MeshP& piano)
+{
+
+	piano.vertices.push_back(vec3(-1.0, 0.0, 1.0));
+	piano.vertices.push_back(vec3(1.0, 0.0, 1.0));
+	piano.vertices.push_back(vec3(1.0, 0.0, -1.0));
+	piano.vertices.push_back(vec3(-1.0, 0.0, -1.0));
+
+	piano.normals.push_back(vec3(0.0, 1.0, 0.0));
+	piano.normals.push_back(vec3(0.0, 1.0, 0.0));
+	piano.normals.push_back(vec3(0.0, 1.0, 0.0));
+	piano.normals.push_back(vec3(0.0, 1.0, 0.0));
+
+
+	piano.indici.push_back(0); piano.indici.push_back(1); piano.indici.push_back(2);
+	piano.indici.push_back(0); piano.indici.push_back(2); piano.indici.push_back(3);
+
+	piano.texCoords.push_back(vec2(0.0, 2.0));
+	piano.texCoords.push_back(vec2(2.0, 2.0));
+	piano.texCoords.push_back(vec2(2.0, 0.0));
+	piano.texCoords.push_back(vec2(0.0, 0.0));
+
+}

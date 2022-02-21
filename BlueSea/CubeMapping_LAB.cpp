@@ -328,88 +328,6 @@ void moveCameraRight()
 	ViewSetup.target += vec4(direzione_perp, 0);
 }
 
-void crea_cubo(MeshP& mesh)
-{
-	mesh.vertices.push_back(vec3(-1.0, -1.0, 1.0));
-	mesh.vertices.push_back(vec3(1.0, -1.0, 1.0));
-	mesh.vertices.push_back(vec3(1.0, 1.0, 1.0));
-	mesh.vertices.push_back(vec3(-1.0, 1.0, 1.0));
-	// back
-	mesh.vertices.push_back(vec3(-1.0, -1.0, -1.0));
-	mesh.vertices.push_back(vec3(1.0, -1.0, -1.0));
-	mesh.vertices.push_back(vec3(1.0, 1.0, -1.0));
-	mesh.vertices.push_back(vec3(-1.0, 1.0, -1.0));
-
-	mesh.indici.push_back(0); mesh.indici.push_back(1); mesh.indici.push_back(2);
-	mesh.indici.push_back(2); mesh.indici.push_back(3); mesh.indici.push_back(0);
-	mesh.indici.push_back(1); mesh.indici.push_back(5); mesh.indici.push_back(6);
-	mesh.indici.push_back(6); mesh.indici.push_back(2); mesh.indici.push_back(1);
-	mesh.indici.push_back(7); mesh.indici.push_back(6); mesh.indici.push_back(5);
-	mesh.indici.push_back(5); mesh.indici.push_back(4); mesh.indici.push_back(7);
-	mesh.indici.push_back(4); mesh.indici.push_back(0); mesh.indici.push_back(3);
-	mesh.indici.push_back(3); mesh.indici.push_back(7); mesh.indici.push_back(4);
-	mesh.indici.push_back(4); mesh.indici.push_back(5); mesh.indici.push_back(1);
-	mesh.indici.push_back(1); mesh.indici.push_back(0); mesh.indici.push_back(4);
-	mesh.indici.push_back(3); mesh.indici.push_back(2); mesh.indici.push_back(6);
-	mesh.indici.push_back(6); mesh.indici.push_back(7); mesh.indici.push_back(3);
-
-	mesh.normals.push_back(normalize(vec3(0, 0, 1)));
-	mesh.normals.push_back(normalize(vec3(0, 0, 1)));
-	mesh.normals.push_back(normalize(vec3(0, 0, 1)));
-	mesh.normals.push_back(normalize(vec3(0, 0, 1)));
-	mesh.normals.push_back(normalize(vec3(0, 0, -1)));
-	mesh.normals.push_back(normalize(vec3(0, 0, -1)));
-	mesh.normals.push_back(normalize(vec3(0, 0, -1)));
-	mesh.normals.push_back(normalize(vec3(0, 0, -1)));
-
-}
-void crea_piramide(vector<Point>& vertices, vector <GLuint>& index_vertices)
-{
-	vertices.push_back({ -1.0, 0.0,  1.0,1.0, 0.5, 0.0, 1.0 });
-
-	vertices.push_back({ 1.0, 0.0,  1.0,0.5, 1.0, 0.0,1.0 });
-
-	vertices.push_back({ 1.0, 0.0, -1.0, 0.0, 0.5, 1.0,1.0 });
-
-	vertices.push_back({ -1.0,  0.0,  -1.0, 1.0, 1.0, 1.0,1.0 });
-	// Apice piramide
-	vertices.push_back({ 0.0,1.0,0.0,1.0, 0.5, 0.0,1.0 });
-
-
-	index_vertices.push_back(0); index_vertices.push_back(1); index_vertices.push_back(2);
-	index_vertices.push_back(0); index_vertices.push_back(2); index_vertices.push_back(3);
-
-	index_vertices.push_back(0); index_vertices.push_back(4); index_vertices.push_back(3);
-	index_vertices.push_back(0); index_vertices.push_back(1); index_vertices.push_back(4);
-
-	index_vertices.push_back(3); index_vertices.push_back(2); index_vertices.push_back(4);
-	index_vertices.push_back(1); index_vertices.push_back(2); index_vertices.push_back(4);
-}
-
-void crea_piano(MeshP& piano)
-{
-
-	piano.vertices.push_back(vec3(-1.0, 0.0, 1.0));
-	piano.vertices.push_back(vec3(1.0, 0.0, 1.0));
-	piano.vertices.push_back(vec3(1.0, 0.0, -1.0));
-	piano.vertices.push_back(vec3(-1.0, 0.0, -1.0));
-
-	piano.normals.push_back(vec3(0.0, 1.0, 0.0));
-	piano.normals.push_back(vec3(0.0, 1.0, 0.0));
-	piano.normals.push_back(vec3(0.0, 1.0, 0.0));
-	piano.normals.push_back(vec3(0.0, 1.0, 0.0));
-
-
-	piano.indici.push_back(0); piano.indici.push_back(1); piano.indici.push_back(2);
-	piano.indici.push_back(0); piano.indici.push_back(2); piano.indici.push_back(3);
-
-	piano.texCoords.push_back(vec2(0.0, 2.0));
-	piano.texCoords.push_back(vec2(2.0, 2.0));
-	piano.texCoords.push_back(vec2(2.0, 0.0));
-	piano.texCoords.push_back(vec2(0.0, 0.0));
-
-}
-
 void INIT_VAO(void)
 {
 	GLenum ErrorCheckValue = glGetError();
@@ -513,25 +431,6 @@ void INIT_VAO(void)
 	sky.mesh = skymesh;
 	sky.material = MaterialType::RED_PLASTIC;
 
-	//Carica modello obj
-	Mesh casa = {};
-	bool modello = loadOBJ("VillettaUV.obj", casa);
-	crea_VAO_obj(&casa);
-	Object obj6 = {};
-	obj6.mesh = casa;
-	obj6.material = MaterialType::BRASS;
-	objects.push_back(obj6);
-
-
-	Mesh griglia = {};
-	modello = loadOBJ("axis.obj", griglia);
-	crea_VAO_obj(&griglia);
-	Object obj7 = {};
-	obj7.mesh = griglia;
-	obj7.material = MaterialType::BRASS;
-	objects.push_back(obj7);
-
-
 	light.position = { 0.0,5.0,0.0 };
 	light.color = { 1.0,1.0,1.0 };
 	light.power = 1.f;
@@ -594,7 +493,6 @@ void INIT_VAO(void)
 	PerspectiveSetup.far_plane = 2000.0f;
 	PerspectiveSetup.near_plane = 0.1f;
 }
-
 
 void resize(int w, int h)
 {
@@ -682,6 +580,7 @@ void mouseActiveMotion(int x, int y)
 	last_mouse_pos_X = x; last_mouse_pos_Y = y;
 	glutPostRedisplay();
 }
+
 void drawScene(void)
 {
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -722,15 +621,15 @@ void drawScene(void)
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glBindVertexArray(obj.mesh.vertexArrayObjID);
 		//Passaggio allo shader del Materiale Sfera
-		glUniform3fv(light_unif.material_ambient, 1, glm::value_ptr(materials[obj.material].ambient));
-		glUniform3fv(light_unif.material_diffuse, 1, glm::value_ptr(materials[obj.material].diffuse));
-		glUniform3fv(light_unif.material_specular, 1, glm::value_ptr(materials[obj.material].specular));
+		glUniform3fv(light_unif.material_ambient, 1, value_ptr(materials[obj.material].ambient));
+		glUniform3fv(light_unif.material_diffuse, 1, value_ptr(materials[obj.material].diffuse));
+		glUniform3fv(light_unif.material_specular, 1, value_ptr(materials[obj.material].specular));
 		glUniform1f(light_unif.material_shininess, materials[obj.material].shininess);
 
 		//definisco le matrici di Modellazione
 		Model = mat4(1.0);
-		Model = translate(Model, vec3(0.0, 2.0, 0.0));
-		Model = scale(Model, vec3(3.0f, 3.0f, 3.0f));
+		Model = translate(Model, obj.translation);
+		Model = scale(Model, obj.scale);
 
 		//Passo al Vertex Shader il puntatore alla matrice Model, che sarà associata alla variabile Uniform mat4 Projection
 		//all'interno del Vertex shader. Uso l'identificatio MatModel
@@ -742,117 +641,11 @@ void drawScene(void)
 		glBindVertexArray(0);
 	}
 
-	glUniform1i(lscelta, 2);
-	//rendo attivo il VAO dell'oggetto 0, tipo OBJ
-	glBindVertexArray(objects[0].mesh.vertexArrayObjID);
-	//Definizione materiale 
-	glUniform3fv(light_unif.material_ambient, 1, glm::value_ptr(materials[objects[0].material].ambient));
-	glUniform3fv(light_unif.material_diffuse, 1, glm::value_ptr(materials[objects[0].material].diffuse));
-	glUniform3fv(light_unif.material_specular, 1, glm::value_ptr(materials[objects[0].material].specular));
-	glUniform1f(light_unif.material_shininess, materials[objects[0].material].shininess);
-	//definisco le matrici di Modellazione
-	Model = mat4(1.0);
-	Model = translate(Model, vec3(10.0, 0.0, 0.0));
-	Model = scale(Model, vec3(2.0f, 2.0f, 2.0f));
-
-	Model = rotate(Model, radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	//Passo al Vertex Shader il puntatore alla matrice Model, che sarà associata alla variabile Uniform mat4 Projection
-	//all'interno del Vertex shader. Uso l'identificatio MatModel
-
-	glUniformMatrix4fv(MatModel, 1, GL_FALSE, value_ptr(Model));
-	//Disegno
-	glDrawArrays(GL_TRIANGLES, 0, objects[0].mesh.vertices.size());
-	glBindVertexArray(0);
-
-	//Disegno griglia
-	glUniform1i(lscelta, 2);
-	//rendo attivo il VAO dell'oggetto 0, tipo OBJ
-	glBindVertexArray(objects[1].mesh.vertexArrayObjID);
-	//Definizione materiale 
-	glUniform3fv(light_unif.material_ambient, 1, glm::value_ptr(materials[objects[1].material].ambient));
-	glUniform3fv(light_unif.material_diffuse, 1, glm::value_ptr(materials[objects[1].material].diffuse));
-	glUniform3fv(light_unif.material_specular, 1, glm::value_ptr(materials[objects[1].material].specular));
-	glUniform1f(light_unif.material_shininess, materials[objects[1].material].shininess);
-
-	//definisco le matrici di Modellazione
-	Model = mat4(1.0);
-	//Model = translate(Model, vec3(10.0, 0.0, 0.0));
-	Model = scale(Model, vec3(6.0f, 6.0f, 6.0f));
-
-	//Model = rotate(Model, radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	//Passo al Vertex Shader il puntatore alla matrice Model, che sarà associata alla variabile Uniform mat4 Projection
-	//all'interno del Vertex shader. Uso l'identificatio MatModel
-
-	glUniformMatrix4fv(MatModel, 1, GL_FALSE, value_ptr(Model));
-	//Disegno
-	glDrawArrays(GL_TRIANGLES, 0, objects[1].mesh.vertices.size());
-	glBindVertexArray(0);
-
 	glutSwapBuffers();
-
 }
-
-void main_menu_func(int option)
-{
-	switch (option)
-	{
-	case MenuOption::WIRE_FRAME: glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		break;
-	case MenuOption::FACE_FILL: glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		break;
-	case MenuOption::CULLING_ON: glEnable(GL_CULL_FACE);
-		break;
-	case MenuOption::CULLING_OFF: glDisable(GL_CULL_FACE);
-		break;
-
-	default:
-		break;
-	}
-}
-
-void material_menu_function(int option)
-{
-	objectsP[selected_obj].material = (MaterialType)option;
-}
-
-void shader_menu_function(int option) {
-	objectsP[selected_obj].sceltaS = shaders[option].value;
-}
-
-void buildOpenGLMenu()
-{
-	int materialSubMenu = glutCreateMenu(material_menu_function);
-
-	glutAddMenuEntry(materials[MaterialType::RED_PLASTIC].name.c_str(), MaterialType::RED_PLASTIC);
-	glutAddMenuEntry(materials[MaterialType::EMERALD].name.c_str(), MaterialType::EMERALD);
-	glutAddMenuEntry(materials[MaterialType::BRASS].name.c_str(), MaterialType::BRASS);
-	glutAddMenuEntry(materials[MaterialType::SLATE].name.c_str(), MaterialType::SLATE);
-
-	int shaderSubMenu = glutCreateMenu(shader_menu_function);
-	glutAddMenuEntry(shaders[ShaderOption::GOURAD_SHADING].name.c_str(), ShaderOption::GOURAD_SHADING);
-	glutAddMenuEntry(shaders[ShaderOption::PHONG_SHADING].name.c_str(), ShaderOption::PHONG_SHADING);
-	glutAddMenuEntry(shaders[ShaderOption::ONDE_SHADING].name.c_str(), ShaderOption::ONDE_SHADING);
-	glutAddMenuEntry(shaders[ShaderOption::BANDIERA_SHADING].name.c_str(), ShaderOption::BANDIERA_SHADING);
-
-
-	glutCreateMenu(main_menu_func); // richiama main_menu_func() alla selezione di una voce menu
-	glutAddMenuEntry("Opzioni", -1); //-1 significa che non si vuole gestire questa riga
-	glutAddMenuEntry("", -1);
-	glutAddMenuEntry("Wireframe", MenuOption::WIRE_FRAME);
-	glutAddMenuEntry("Face fill", MenuOption::FACE_FILL);
-	glutAddMenuEntry("Culling: ON", MenuOption::CULLING_ON);
-	glutAddMenuEntry("Culling: OFF", MenuOption::CULLING_OFF);
-	glutAddSubMenu("Material", materialSubMenu);
-	glutAddSubMenu("Shader", shaderSubMenu);
-	glutAttachMenu(GLUT_RIGHT_BUTTON);
-}
-
 
 void mouseWheel(int button, int dir, int x, int y)
 {
-
 	if (PerspectiveSetup.fovY >= 1.0f && PerspectiveSetup.fovY <= 70.0f)
 		PerspectiveSetup.fovY -= 0.01 * dir;
 	if (PerspectiveSetup.fovY <= 1.0f)
@@ -864,33 +657,6 @@ void mouseWheel(int button, int dir, int x, int y)
 	return;
 }
 
-
-void special(int key, int x, int y)
-{
-	switch (key)
-	{
-
-	case GLUT_KEY_LEFT:
-		selected_obj += 1;
-
-		if (selected_obj > objectsP.size() - 1)
-			selected_obj = selected_obj - 1;
-
-		break;
-	case GLUT_KEY_RIGHT:
-		selected_obj -= 1;
-
-		if (selected_obj < 0)
-			selected_obj = 0;
-
-		break;
-	default:
-		break;
-
-	}
-	printf("selected_obj in Material Menu %d --> %s \n", selected_obj, objectsP[selected_obj].name.c_str());
-	glutPostRedisplay();
-}
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -908,7 +674,6 @@ int main(int argc, char* argv[])
 	glutKeyboardFunc(keyboardPressedEvent);
 	glutMotionFunc(mouseActiveMotion); // Evento tasto premuto
 	glutMouseFunc(mouseClick);
-	glutSpecialFunc(special); // Freccie sinistra e destra
 	glutMouseWheelFunc(mouseWheel);
 	glutTimerFunc(10, update_cubo, 0);
 	glewExperimental = GL_TRUE;
@@ -951,7 +716,6 @@ int main(int argc, char* argv[])
 	light_unif.material_diffuse = glGetUniformLocation(programId, "material.diffuse");
 	light_unif.material_specular = glGetUniformLocation(programId, "material.specular");
 	light_unif.material_shininess = glGetUniformLocation(programId, "material.shininess");
-	buildOpenGLMenu();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 
