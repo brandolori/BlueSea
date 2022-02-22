@@ -12,6 +12,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include "utils.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -34,37 +35,13 @@ static bool moving_trackball = 0;
 static int last_mouse_pos_Y;
 static int last_mouse_pos_X;
 
-typedef enum {
-	WIRE_FRAME,
-	FACE_FILL,
-	CULLING_ON,
-	CULLING_OFF,
-} MenuOption;
-
-typedef enum {
-	GOURAD_SHADING,
-	PHONG_SHADING,
-	ONDE_SHADING,
-	BANDIERA_SHADING,
-} ShaderOption;
-
 //Shaders Uniforms 
 static vector<LightShaderUniform> light_uniforms; // for shaders with light
 static vector<BaseShaderUniform> base_uniforms; // for ALL shaders
 
 point_light light;
-static vector<Material> materials;
-static vector<Shader> shaders;
-static vector<Object> objects;
 static vector<ObjectP> objectsP;
 ObjectP sky = {};
-
-//MATERIALI DI BASE
-vec3 red_plastic_ambient = { 0.1, 0.0, 0.0 }, red_plastic_diffuse = { 0.6, 0.1, 0.1 }, red_plastic_specular = { 0.7, 0.6, 0.6 }; GLfloat red_plastic_shininess = 32.0f;
-vec3 brass_ambient = { 0.1, 0.06, 0.015 }, brass_diffuse = { 0.78, 0.57, 0.11 }, brass_specular = { 0.99, 0.91, 0.81 }; GLfloat brass_shininess = 27.8f;
-vec3 emerald_ambient = { 0.0215, 0.04745, 0.0215 }, emerald_diffuse = { 0.07568, 0.61424, 0.07568 }, emerald_specular = { 0.633, 0.727811, 0.633 }; GLfloat emerald_shininess = 78.8f;
-vec3 slate_ambient = { 0.02, 0.02, 0.02 }, slate_diffuse = { 0.1, 0.1, 0.1 }, slate_specular{ 0.4, 0.4, 0.4 }; GLfloat slate_shininess = 1.78125f;
-
 
 mat4 Projection, Model, View;
 
@@ -112,6 +89,7 @@ void genera_texture(void)
 
 		if (nrChannels == 4)
 			format = GL_RGBA;
+
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		printf("Tutto OK %d %d \n", width, height);
@@ -196,64 +174,6 @@ unsigned int loadCubemap(vector<string> faces)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	return textureID;
-}
-
-
-void crea_VAO_obj(Mesh* mesh)
-{
-	glGenVertexArrays(1, &mesh->vertexArrayObjID);
-	glBindVertexArray(mesh->vertexArrayObjID);
-
-	glGenBuffers(1, &mesh->vertexBufferObjID);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBufferObjID);
-	glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size() * sizeof(vec3), mesh->vertices.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(0);
-
-	//Genero , rendo attivo, riempio il VBO delle NORMALI
-	glGenBuffers(1, &mesh->normalBufferObjID);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->normalBufferObjID);
-	glBufferData(GL_ARRAY_BUFFER, mesh->normals.size() * sizeof(vec3), mesh->normals.data(), GL_STATIC_DRAW);
-	//Adesso carico il VBO delle NORMALI nel layer 2
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(1);
-
-}
-void crea_VAO_Vector(MeshP* mesh)
-{
-
-	glGenVertexArrays(1, &mesh->vertexArrayObjID);
-	glBindVertexArray(mesh->vertexArrayObjID);
-
-	glGenBuffers(1, &mesh->vertexBufferObjID);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBufferObjID);
-	glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size() * sizeof(vec3), mesh->vertices.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(0);
-
-	//Genero , rendo attivo, riempio il VBO delle NORMALI
-	glGenBuffers(1, &mesh->normalBufferObjID);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->normalBufferObjID);
-	glBufferData(GL_ARRAY_BUFFER, mesh->normals.size() * sizeof(vec3), mesh->normals.data(), GL_STATIC_DRAW);
-	//Adesso carico il VBO delle NORMALI nel layer 2
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(1);
-
-	//Genero , rendo attivo, riempio il VBO delle TEXTURE
-	glGenBuffers(1, &mesh->uvBufferObjID);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->uvBufferObjID);
-	glBufferData(GL_ARRAY_BUFFER, mesh->texCoords.size() * sizeof(vec2), mesh->texCoords.data(), GL_STATIC_DRAW);
-	//Adesso carico il VBO delle NORMALI nel layer 2
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(2);
-
-
-	//EBO di tipo indici
-	glGenBuffers(1, &mesh->indicesBufferObjID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesBufferObjID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indici.size() * sizeof(GLuint), mesh->indici.data(), GL_STATIC_DRAW);
 }
 
 // timing
@@ -354,89 +274,79 @@ void INIT_VAO(void)
 	MeshP sfera = {};
 	crea_sfera(centro, raggio, sfera);
 	crea_VAO_Vector(&sfera);
-	ObjectP obj1 = {};
-	obj1.mesh = sfera;
-	obj1.material = MaterialType::RED_PLASTIC;
+	ObjectP obj1 = {
+		{
+			vec3(1,0,0),
+			vec3(1,0,0),
+			vec3(1,0,0),
+			32.0,
+			6
+		},
+		sfera,
+		vec3(0.0, 2.0, 0.0),
+		vec3(3.0, 3.0, 3.0)
+	};
 	objectsP.push_back(obj1);
-	objectsP[0].name = "SFERA";
-	objectsP[0].sceltaS = 2;
-	objectsP[0].translation = vec3(0.0, 2.0, 0.0);
-	objectsP[0].scale = vec3(3.0, 3.0, 3.0);
 
 	//Creo oggetto Piano suddiviso
 	MeshP piano = {};
 	crea_piano_suddiviso(piano);
 	crea_VAO_Vector(&piano);
-	ObjectP obj2 = {};
-	obj2.mesh = piano;
-	obj2.material = MaterialType::EMERALD;
+	ObjectP obj2 = {
+		{
+			vec3(0,0,0),
+			vec3(0,.2,.6),
+			vec3(0,0,0),
+			32.0,
+			3
+		},
+		piano,
+		vec3(-500, 0, -500),
+		vec3(1000, 1, 1000),
+		0
+	};
 	objectsP.push_back(obj2);
-	objectsP[1].name = "PIANO";
-	objectsP[1].sceltaS = 3;
-	objectsP[1].translation = vec3(-500, 0, -500);
-	objectsP[1].scale = vec3(1000, 1, 1000);
+
+	//Creo oggetto sfera2
+	MeshP sfera2 = {};
+	crea_sfera(centro, raggio, sfera2);
+	crea_VAO_Vector(&sfera2);
+	ObjectP obj3 = {
+		{
+			vec3(.1,0,0),
+			vec3(.6,.5,.5),
+			vec3(.7,.6,.6),
+			100.0,
+			2
+		},
+		sfera2,
+		vec3(10.0, 2.0, 0.0),
+		vec3(3.0, 3.0, 3.0)
+	};
+	objectsP.push_back(obj3);
+
+	cout << obj3.material.shininess << endl;
 
 	// Crea skybox
 	MeshP skymesh = {};
 	crea_cubo(skymesh);
 	crea_VAO_Vector(&skymesh);
 	sky.mesh = skymesh;
-	sky.material = MaterialType::RED_PLASTIC;
+	sky.material = {};
+
 
 	light.position = { 0.0,5.0,0.0 };
 	light.color = { 1.0,1.0,1.0 };
 	light.power = 1.f;
 	//Definisco il colore che verrà assegnato allo schermo
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-	// Materials setup
-	materials.resize(5);
-	materials[MaterialType::RED_PLASTIC].name = "Red Plastic";
-	materials[MaterialType::RED_PLASTIC].ambient = red_plastic_ambient;
-	materials[MaterialType::RED_PLASTIC].diffuse = red_plastic_diffuse;
-	materials[MaterialType::RED_PLASTIC].specular = red_plastic_specular;
-	materials[MaterialType::RED_PLASTIC].shininess = red_plastic_shininess;
-
-	materials[MaterialType::EMERALD].name = "Emerald";
-	materials[MaterialType::EMERALD].ambient = emerald_ambient;
-	materials[MaterialType::EMERALD].diffuse = emerald_diffuse;
-	materials[MaterialType::EMERALD].specular = emerald_specular;
-	materials[MaterialType::EMERALD].shininess = emerald_shininess;
-
-	materials[MaterialType::BRASS].name = "Brass";
-	materials[MaterialType::BRASS].ambient = brass_ambient;
-	materials[MaterialType::BRASS].diffuse = brass_diffuse;
-	materials[MaterialType::BRASS].specular = brass_specular;
-	materials[MaterialType::BRASS].shininess = brass_shininess;
-
-	materials[MaterialType::SLATE].name = "Slate";
-	materials[MaterialType::SLATE].ambient = slate_ambient;
-	materials[MaterialType::SLATE].diffuse = slate_diffuse;
-	materials[MaterialType::SLATE].specular = slate_specular;
-	materials[MaterialType::SLATE].shininess = slate_shininess;
-
-	materials[MaterialType::NO_MATERIAL].name = "NO_MATERIAL";
-	materials[MaterialType::NO_MATERIAL].ambient = glm::vec3(1, 1, 1);
-	materials[MaterialType::NO_MATERIAL].diffuse = glm::vec3(0, 0, 0);
-	materials[MaterialType::NO_MATERIAL].specular = glm::vec3(0, 0, 0);
-	materials[MaterialType::NO_MATERIAL].shininess = 1.f;
-
-	// Shaders setup
-	shaders.resize(4);
-	shaders[ShaderOption::GOURAD_SHADING].value = 1;
-	shaders[ShaderOption::GOURAD_SHADING].name = "GOURAD SHADING";
-	shaders[ShaderOption::PHONG_SHADING].value = 2;
-	shaders[ShaderOption::PHONG_SHADING].name = "PHONG SHADING";
-	shaders[ShaderOption::ONDE_SHADING].value = 3;
-	shaders[ShaderOption::ONDE_SHADING].name = "ONDE SHADING";
-	shaders[ShaderOption::BANDIERA_SHADING].value = 4;
-	shaders[ShaderOption::BANDIERA_SHADING].name = "BANDIERA SHADING";
 
 	//Imposto la telecamera
 	ViewSetup = {};
-	ViewSetup.position = glm::vec4(0.0, 0.5, 20.0, 0.0);
-	ViewSetup.target = glm::vec4(0.0, 0.0, 0.0, 0.0);
+	ViewSetup.position = vec4(0.0, 0.5, 20.0, 0.0);
+	ViewSetup.target = vec4(0.0, 0.0, 0.0, 0.0);
 	ViewSetup.direction = ViewSetup.target - ViewSetup.position;
-	ViewSetup.upVector = glm::vec4(0.0, 1.0, 0.0, 0.0);
+	ViewSetup.upVector = vec4(0.0, 1.0, 0.0, 0.0);
 
 	//Imposto la proiezione prospettica
 	PerspectiveSetup = {};
@@ -559,24 +469,24 @@ void drawScene(void)
 	glUseProgram(programId);
 
 	//definizione Luce: posizione, colore ed intensità
-	glUniform3f(light_unif.light_position_pointer, light.position.x + 10 * cos(radians(angolo)), light.position.y, light.position.z + 10 * sin(radians(angolo)));
+	glUniform3f(light_unif.light_position_pointer, light.position.x, light.position.y, light.position.z);
 	glUniform3f(light_unif.light_color_pointer, light.color.r, light.color.g, light.color.b);
 	glUniform1f(light_unif.light_power_pointer, light.power);
 
 	for (auto& obj : objectsP)
 	{
 		//rendo attivo il VAO dell'oggetto
-		glUniform1i(lscelta, obj.sceltaS);
+		glUniform1i(lscelta, obj.material.shader);
 		glUniform3f(Vec_cameraPos, ViewSetup.position.x, ViewSetup.position.y, ViewSetup.position.z);
 		glUniformMatrix4fv(MatrixProj, 1, GL_FALSE, value_ptr(Projection));
 		glUniformMatrix4fv(MatView, 1, GL_FALSE, value_ptr(View));
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glBindVertexArray(obj.mesh.vertexArrayObjID);
 		//Passaggio allo shader del Materiale Sfera
-		glUniform3fv(light_unif.material_ambient, 1, value_ptr(materials[obj.material].ambient));
-		glUniform3fv(light_unif.material_diffuse, 1, value_ptr(materials[obj.material].diffuse));
-		glUniform3fv(light_unif.material_specular, 1, value_ptr(materials[obj.material].specular));
-		glUniform1f(light_unif.material_shininess, materials[obj.material].shininess);
+		glUniform3fv(light_unif.material_ambient, 1, value_ptr(obj.material.ambient));
+		glUniform3fv(light_unif.material_diffuse, 1, value_ptr(obj.material.diffuse));
+		glUniform3fv(light_unif.material_specular, 1, value_ptr(obj.material.specular));
+		glUniform1f(light_unif.material_shininess, obj.material.shininess);
 
 		//definisco le matrici di Modellazione
 		Model = mat4(1.0);

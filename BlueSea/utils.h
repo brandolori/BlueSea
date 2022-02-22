@@ -1,0 +1,5 @@
+#pragma once
+#include "Strutture.h"
+
+void crea_VAO_obj(Mesh* mesh);
+void crea_VAO_Vector(MeshP* mesh);

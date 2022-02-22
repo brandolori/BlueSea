@@ -7,7 +7,6 @@ typedef struct {
 } Point;
 
 typedef struct {
-
 	float r, g, b, a;
 }ColorRBGA;
 
@@ -16,9 +15,9 @@ typedef struct {
 } Indici;
 
 typedef struct {
-	std::vector<vec3> vertices;
-	std::vector<vec3> normals;
-	std::vector<vec2> texCoords;
+	vector<vec3> vertices;
+	vector<vec3> normals;
+	vector<vec2> texCoords;
 	GLuint vertexArrayObjID;
 	GLuint vertexBufferObjID;
 	GLuint normalBufferObjID;
@@ -46,42 +45,16 @@ typedef enum {
 } MaterialType;
 
 typedef struct {
-	string name;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
-	GLfloat shininess;
+	float shininess;
+	int shader;
 } Material;
 
 typedef struct {
-	string name;
-	int value;
-} Shader;
-
-typedef enum { // used also as index, don't modify order
-	GOURAUD,
-	PHONG,
-	BLINN,
-	TOON,
-	PASS_THROUGH,
-	WAVE
-} ShadingType;
-
-typedef struct {
-	Mesh mesh;
-	MaterialType material;
-	ShadingType shading;
-	mat4 M;
-	string name;
-} Object;
-
-typedef struct {
+	Material material;
 	MeshP mesh;
-	MaterialType material;
-	ShadingType shading;
-	mat4 M;
-	string name;
-	int sceltaS;
 	vec3 translation;
 	vec3 scale;
 	float rotation;

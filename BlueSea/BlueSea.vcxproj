@@ -146,14 +146,20 @@
     <ClCompile Include="geometria.cpp" />
     <ClCompile Include="objloader.cpp" />
     <ClCompile Include="ShaderMaker.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="geometria.h" />
     <ClInclude Include="Lib.h" />
     <ClInclude Include="objloader.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ShaderMaker.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Strutture.h" />
+    <ClInclude Include="utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BlueSea.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
