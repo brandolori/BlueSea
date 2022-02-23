@@ -16,24 +16,15 @@ typedef struct {
 
 typedef struct {
 	vector<vec3> vertices;
+	vector<GLuint> indici;
 	vector<vec3> normals;
 	vector<vec2> texCoords;
 	GLuint vertexArrayObjID;
 	GLuint vertexBufferObjID;
 	GLuint normalBufferObjID;
-	GLuint uvBufferObjID;
-} Mesh;
-
-typedef struct {
-	std::vector<vec3> vertices;
-	std::vector <GLuint>  indici;
-	std::vector<vec3> normals;
-	std::vector<vec2> texCoords;
-	GLuint vertexArrayObjID;
-	GLuint vertexBufferObjID;
-	GLuint normalBufferObjID;
 	GLuint indicesBufferObjID;
 	GLuint uvBufferObjID;
+	bool isIndexed;
 } MeshP;
 
 typedef enum {

@@ -17,7 +17,7 @@
 // - More secure. Change another line and you can inject code.
 // - Loading from memory, stream, etc
 
-bool loadOBJ(const char* path, Mesh& mesh)
+bool loadOBJ(const char* path, MeshP& mesh)
  {
 	printf("Loading OBJ file %s...\n", path);
 

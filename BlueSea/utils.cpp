@@ -1,6 +1,6 @@
 #include "Strutture.h"
 
-void crea_VAO_obj(Mesh* mesh)
+void crea_VAO_obj(MeshP* mesh)
 {
 	glGenVertexArrays(1, &mesh->vertexArrayObjID);
 	glBindVertexArray(mesh->vertexArrayObjID);
@@ -20,6 +20,7 @@ void crea_VAO_obj(Mesh* mesh)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(1);
 
+	mesh->isIndexed = false;
 }
 void crea_VAO_Vector(MeshP* mesh)
 {
@@ -55,5 +56,7 @@ void crea_VAO_Vector(MeshP* mesh)
 	glGenBuffers(1, &mesh->indicesBufferObjID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indicesBufferObjID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indici.size() * sizeof(GLuint), mesh->indici.data(), GL_STATIC_DRAW);
+
+	mesh->isIndexed = true;
 }
 

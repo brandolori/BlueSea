@@ -284,7 +284,8 @@ void INIT_VAO(void)
 		},
 		sfera,
 		vec3(0.0, 2.0, 0.0),
-		vec3(3.0, 3.0, 3.0)
+		vec3(3.0, 3.0, 3.0),
+		0
 	};
 	objectsP.push_back(obj1);
 
@@ -321,11 +322,29 @@ void INIT_VAO(void)
 		},
 		sfera2,
 		vec3(10.0, 2.0, 0.0),
-		vec3(3.0, 3.0, 3.0)
+		vec3(3.0, 3.0, 3.0),
+		0
 	};
 	objectsP.push_back(obj3);
 
-	cout << obj3.material.shininess << endl;
+	//Carica modello obj barca
+	MeshP barca = {};
+	bool modello = loadOBJ("bout.obj", barca);
+	crea_VAO_obj(&barca);
+	ObjectP objBarca = {
+		{
+			vec3(.1,0,0),
+			vec3(.6,.5,.5),
+			vec3(.7,.6,.6),
+			100.0,
+			2
+		},
+		barca,
+		vec3(10.0, 2.0, 0.0),
+		vec3(.1, .1, .1),
+		0
+	};
+	objectsP.push_back(objBarca);
 
 	// Crea skybox
 	MeshP skymesh = {};
@@ -333,7 +352,6 @@ void INIT_VAO(void)
 	crea_VAO_Vector(&skymesh);
 	sky.mesh = skymesh;
 	sky.material = {};
-
 
 	light.position = { 0.0,5.0,0.0 };
 	light.color = { 1.0,1.0,1.0 };
@@ -500,7 +518,11 @@ void drawScene(void)
 		glUniformMatrix4fv(MatModel, 1, GL_FALSE, value_ptr(Model));
 		//Disegno
 
-		glDrawElements(GL_TRIANGLES, obj.mesh.indici.size() * sizeof(GLuint), GL_UNSIGNED_INT, 0);
+		if (obj.mesh.isIndexed)
+			glDrawElements(GL_TRIANGLES, obj.mesh.indici.size() * sizeof(GLuint), GL_UNSIGNED_INT, 0);
+		else
+			glDrawArrays(GL_TRIANGLES, 0, obj.mesh.vertices.size());
+
 		glBindVertexArray(0);
 	}
 

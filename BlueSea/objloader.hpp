@@ -1,9 +1,7 @@
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 #include "Strutture.h"
-bool loadOBJ(const char* path, Mesh& mesh);
-
-
+bool loadOBJ(const char* path, MeshP& mesh);
 
 bool loadAssImp(
 	const char* path,
