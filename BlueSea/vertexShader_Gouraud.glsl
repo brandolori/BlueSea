@@ -6,6 +6,7 @@ layout (location = 2 ) in vec2 coord_st; // Attributo texture
 uniform mat4 Model;
 uniform mat4 Projection;
 uniform mat4 View;
+uniform vec3 center;
 
 uniform int sceltaS;
 uniform float time;
@@ -34,10 +35,18 @@ out vec3 Normal;
 out vec3 Position;
 out float waveEdge;
 
+float wavePeriod = 50;
+
+float waveOffset(float x, float y) {
+
+    return sin(x * wavePeriod + time) + sin(y * wavePeriod + time);
+}
+
 void main()
 {
-    if (sceltaS==2)  //Serve per implementare il Phong Shading
+    if (sceltaS==2)  // phong shading
     {
+
         gl_Position = Projection * View * Model * vec4(aPos, 1.0);
 
 	    // Position in VCS
@@ -51,11 +60,13 @@ void main()
 	    N = mat3(View) * transpose(inverse(mat3( Model))) * vertexNormal;
     }
 
-    if (sceltaS==3)  // per onde
+    if (sceltaS==3)  // mare
     {
         vec4 v =  vec4(aPos, 1.0);
-        float period = 100;
-        float offset = sin(period * aPos.x + time) + sin(period * aPos.z + time);
+        vec4 worldPos = Model* v;
+        
+        float offset = waveOffset(worldPos.x, worldPos.z);
+        
         v.y	= v.y + offset;
 
         gl_Position = Projection * View * Model * v;
@@ -98,7 +109,7 @@ void main()
         frag_coord_st=coord_st;
     }
 
-    if (sceltaS==6 || sceltaS==7)  //Riflessione con Environment Mapping
+    if (sceltaS==6 || sceltaS==7)  // Riflessione con Environment Mapping
     {
         Normal = mat3(transpose(inverse(Model))) * vertexNormal;  //Normali in coordinate del mondo
         Position = vec3(Model * vec4(aPos, 1.0)); //in WCS

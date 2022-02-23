@@ -1,6 +1,7 @@
 #pragma once
 #include "Lib.h"
 #include <string>
+
 typedef struct {
 	float x, y, z;
 	float r, g, b, a;
@@ -26,14 +27,6 @@ typedef struct {
 	GLuint uvBufferObjID;
 	bool isIndexed;
 } MeshP;
-
-typedef enum {
-	RED_PLASTIC,
-	EMERALD,
-	BRASS,
-	SLATE,
-	NO_MATERIAL
-} MaterialType;
 
 typedef struct {
 	vec3 ambient;
@@ -73,13 +66,6 @@ typedef struct {
 	vec3 color;
 	GLfloat power;
 } point_light;
-
-struct {
-	vec4 position;
-	vec4 target;
-	vec4 upVector;
-	vec4 direction;
-} ViewSetup;
 
 struct {
 	float fovY, aspect, near_plane, far_plane;
