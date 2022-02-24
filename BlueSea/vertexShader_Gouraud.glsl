@@ -56,10 +56,9 @@ void main()
     if (sceltaS==3)  // mare
     {
         vec4 v =  vec4(aPos, 1.0);
-        vec4 worldPos = Model* v;
         
-        float wavePeriod = 25;
-        float offset = 2 * sin(worldPos.x * wavePeriod + time) * sin(worldPos.z * wavePeriod + time);
+        float wavePeriod = 150;
+        float offset = 2 * sin(aPos.x * wavePeriod + time) * sin(aPos.z * wavePeriod + time);
         
         v.y	= v.y + offset;
 

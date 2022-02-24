@@ -78,7 +78,7 @@ vector<string> faces
 	  "negy.jpg",
 	  "posy.jpg",
 
-	   "posz.jpg",
+	  "posz.jpg",
 	  "negz.jpg"
 	  //"right.jpg",
 	  //"left.jpg",
@@ -259,7 +259,7 @@ void INIT_VAO(void)
 
 	//Creo oggetto Piano suddiviso
 	MeshP piano = {};
-	crea_piano_suddiviso(256, piano);
+	crea_piano_suddiviso(512, piano);
 	crea_VAO_Vector(&piano);
 	ObjectP obj2 = {
 		{

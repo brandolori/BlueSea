@@ -227,14 +227,14 @@ void crea_piano_suddiviso(int resolution, MeshP& piano_suddiviso)
 
 	for (i = 0; i < resolution; i++) {
 		for (j = 0; j < resolution; j++) {
-			piano_suddiviso.vertices.push_back(vec3(float(i) / resolution, 0.0f, float(j) / resolution));
+			piano_suddiviso.vertices.push_back(vec3(float(i) / float(resolution), 0.0f, float(j) / float(resolution)));
 			piano_suddiviso.normals.push_back(vec3(0.0, 1.0, 0.0));
-			piano_suddiviso.texCoords.push_back(vec2(float(i) / resolution, float(i) / resolution));
+			piano_suddiviso.texCoords.push_back(vec2(float(i) / float(resolution), float(j) / float(resolution)));
 		}
 	}
 	int cont = -1;
 
-	for (i = 0; i <= pow(resolution, 2) - (resolution + 1); i++) {
+	for (i = 0; i <= pow(resolution, 2) - (long(resolution) + 1); i++) {
 
 		j = i % (resolution);
 
