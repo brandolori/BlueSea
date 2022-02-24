@@ -62,11 +62,14 @@ float maxSpeed = 50;
 vec3 cameraOffset = vec3(0, 20, 30);
 vec3 cameraTargetOffset = vec3(0, 10, 0);
 
+float range = 1000;
+
 // game state
 vec3 speed = vec3(0, 0, 0);
 int inputX = 0;
 int inputY = 0;
-float rotationTarget = 0;
+vec2 boatDirection = vec2(0, 0);
+vec2 targetDirection = vec2(0, 0);
 
 vector<string> faces
 {
@@ -220,7 +223,7 @@ void INIT_VAO(void)
 	ObjectP objBarca = {
 		{
 			vec3(.1,0,0),
-			vec3(.6,.5,.5),
+			vec3(.6,.2,.2),
 			vec3(.7,.6,.6),
 			100.0,
 			2
@@ -232,28 +235,31 @@ void INIT_VAO(void)
 	};
 	objectsP.push_back(objBarca);
 
-	//Creo oggetto sfera
-	MeshP sfera = {};
-	crea_sfera(centro, raggio, sfera);
-	crea_VAO_Vector(&sfera);
-	ObjectP obj1 = {
-		{
-			vec3(1,0,0),
-			vec3(1,0,0),
-			vec3(1,0,0),
-			32.0,
-			6
-		},
-		sfera,
-		vec3(0.0, 0.0, 0.0),
-		vec3(3.0, 3.0, 3.0),
-		0
-	};
-	objectsP.push_back(obj1);
+	// sfere riflettenti
+	for (int i = 0; i < 100; i++) {
+		MeshP sfera = {};
+		crea_sfera(centro, raggio, sfera);
+		crea_VAO_Vector(&sfera);
+		ObjectP obj1 = {
+			{
+				vec3(1,0,0),
+				vec3(1,0,0),
+				vec3(1,0,0),
+				32.0,
+				6
+			},
+			sfera,
+			vec3(random_range(-range,range), 0.0, random_range(-range,range)),
+			vec3(3.0, 3.0, 3.0),
+			0,
+			true
+		};
+		objectsP.push_back(obj1);
+	}
 
 	//Creo oggetto Piano suddiviso
 	MeshP piano = {};
-	crea_piano_suddiviso(piano);
+	crea_piano_suddiviso(256, piano);
 	crea_VAO_Vector(&piano);
 	ObjectP obj2 = {
 		{
@@ -264,31 +270,33 @@ void INIT_VAO(void)
 			3
 		},
 		piano,
-		vec3(-500, 0, -500),
-		vec3(1, 1, 1),
+		vec3(-range, 0, -range),
+		vec3(range * 2, 1, range * 2),
 		0
 	};
 	objectsP.push_back(obj2);
 
-	//Creo oggetto sfera2
-	MeshP sfera2 = {};
-	crea_sfera(centro, raggio, sfera2);
-	crea_VAO_Vector(&sfera2);
-	ObjectP obj3 = {
-		{
-			vec3(.1,0,0),
-			vec3(.6,.5,.5),
-			vec3(.7,.6,.6),
-			100.0,
-			2
-		},
-		sfera2,
-		vec3(10.0, 0.0, 0.0),
-		vec3(3.0, 3.0, 3.0),
-		0
-	};
-	objectsP.push_back(obj3);
-
+	// sfere di gomma
+	for (int i = 0; i < 100; i++) {
+		MeshP sfera = {};
+		crea_sfera(centro, raggio, sfera);
+		crea_VAO_Vector(&sfera);
+		ObjectP obj1 = {
+			{
+				vec3(random_range(0,0.8),random_range(0,0.8),random_range(0,0.8)),
+				vec3(.5,.5,.5),
+				vec3(.5,.5,.5),
+				100.0,
+				2
+			},
+			sfera,
+			vec3(random_range(-range,range), 0.0, random_range(-range,range)),
+			vec3(3.0, 3.0, 3.0),
+			0,
+			true
+		};
+		objectsP.push_back(obj1);
+	}
 
 	// Crea skybox
 	MeshP skymesh = {};
@@ -297,8 +305,8 @@ void INIT_VAO(void)
 	sky.mesh = skymesh;
 	sky.material = {};
 
-	light.position = { 0.0,10.0,0.0 };
-	light.color = { 1.0,1.0,1.0 };
+	light.position = { 0.0, 1000, 0.0 };
+	light.color = { 1.0, 1.0, 1.0 };
 	light.power = 1.f;
 	//Definisco il colore che verrà assegnato allo schermo
 	glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -365,7 +373,9 @@ void drawScene(void)
 
 		//definisco le matrici di Modellazione
 		Model = mat4(1.0);
-		Model = translate(Model, obj.translation);
+		float wavePeriod = 25;
+		float heightOffset = obj.floating ? 2 * sin(obj.translation.x * wavePeriod + currentTime / 1000) * sin(obj.translation.z * wavePeriod + currentTime / 1000) : 0;
+		Model = translate(Model, obj.translation + vec3(0, heightOffset, 0));
 		Model = rotate(Model, obj.rotation, vec3(0, 1, 0));
 		Model = scale(Model, obj.scale);
 
@@ -404,36 +414,18 @@ void update(int a)
 
 	objectsP[0].translation += speed * floatTimestep;
 
-	if (inputX == 1 && inputY == 0)
-		rotationTarget = 0;
-	if (inputX == 1 && inputY == 1)
-		rotationTarget = -pi<float>() / 4;
-	if (inputX == 0 && inputY == 1)
-		rotationTarget = -pi<float>() / 2;
-	if (inputX == -1 && inputY == 1)
-		rotationTarget = -3 * pi<float>() / 4;
-	if (inputX == -1 && inputY == 0)
-		rotationTarget = -pi<float>();
-	if (inputX == -1 && inputY == -1)
-		rotationTarget = -5 * pi<float>() / 4;
-	if (inputX == 0 && inputY == -1)
-		rotationTarget = -3 * pi<float>() / 2;
-	if (inputX == 1 && inputY == -1)
-		rotationTarget = -7 * pi<float>() / 4;
-
-	if (!(inputX == 0 && inputY == 0))
-		rotationTarget = rotationTarget - pi<float>() / 2;
-
-
-	if (objectsP[0].rotation < rotationTarget && 2 * rotationTarget < 2 * pi<float>() - 2 * objectsP[0].rotation) {
-		cout << "ajeje" << endl;
-		objectsP[0].rotation += 2 * pi<float>();
+	if (!(inputX == 0 && inputY == 0)) {
+		targetDirection = normalize(vec2(inputX, inputY));
 	}
 
-	objectsP[0].rotation = fmod(.8 * objectsP[0].rotation + .2 * rotationTarget, 2 * pi<float>());
+	boatDirection = .8f * boatDirection + .2f * targetDirection;
 
-
-	//cout << objectsP[0].rotation << endl;
+	if (boatDirection.y > 0) {
+		objectsP[0].rotation = -acosf(boatDirection.x) - pi<float>() / 2;
+	}
+	else {
+		objectsP[0].rotation = acosf(boatDirection.x) - pi<float>() / 2;
+	}
 
 	glutPostRedisplay();
 }
@@ -502,8 +494,8 @@ int main(int argc, char* argv[])
 	glutCreateWindow("Scena 3D");
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(resize);
-	glutKeyboardFunc(onKeyPress);
 	glutIgnoreKeyRepeat(GL_TRUE);
+	glutKeyboardFunc(onKeyPress);
 	glutKeyboardUpFunc(onKeyRelease);
 	glutTimerFunc(timestep, update, 0);
 	glewExperimental = GL_TRUE;
@@ -521,7 +513,6 @@ int main(int argc, char* argv[])
 	la = glGetUniformLocation(programId, "AmbientProduct");
 	ld = glGetUniformLocation(programId, "DiffuseProduct");
 	ls = glGetUniformLocation(programId, "SpecularProduct");
-	//lp = glGetUniformLocation(programId, "LighPosition");
 	lsh = glGetUniformLocation(programId, "Shininess");
 	leye = glGetUniformLocation(programId, "eyePosition");
 	lscelta = glGetUniformLocation(programId, "sceltaS");

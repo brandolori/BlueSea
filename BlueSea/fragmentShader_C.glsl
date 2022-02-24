@@ -44,10 +44,7 @@ out vec4 FragColor;
   
 void main()
 {
-    if(sceltaS==1)
-        FragColor = ourColor;
-
-    if (sceltaS==2 || sceltaS==4)
+    if (sceltaS==2)
     {
         vec3 ambient = material.ambient;    
 
@@ -65,31 +62,18 @@ void main()
         
         vec3 result = ambient + diffuse + specular;
         FragColor = vec4(result, 1.0);
-
     }
 
     if (sceltaS==3)
     {
-        float colorOffset = (waveEdge) / 20; // from -0.05 to +0.05
-        FragColor = vec4(material.diffuse + colorOffset, 0.8);
+        float colorOffset = (waveEdge) / 20;
+        FragColor = vec4(material.diffuse + colorOffset, 1.0);
     }
-
-    if (sceltaS==5)
-        FragColor=mix(ourColor,texture(tex0,vec2(frag_coord_st.x,1-frag_coord_st.y)),0.5);
 
     if (sceltaS==6)
     {
         vec3 E = normalize(Position - cameraPos);
         vec3 R = reflect(E, normalize(Normal));
-        R =vec3(R.x,-R.yz);
-        FragColor  =vec4(texture(cubemap, R).rgb,1.0);
-    }
-
-    if (sceltaS==7)
-    {
-        float ratio=1.00/1.52;
-        vec3 E = normalize(Position - cameraPos);
-        vec3 R = refract(E, normalize(Normal),ratio);
         R =vec3(R.x,-R.yz);
         FragColor  =vec4(texture(cubemap, R).rgb,1.0);
     }

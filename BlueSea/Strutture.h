@@ -42,6 +42,7 @@ typedef struct {
 	vec3 translation;
 	vec3 scale;
 	float rotation;
+	bool floating;
 } ObjectP;
 
 typedef struct {

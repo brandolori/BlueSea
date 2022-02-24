@@ -221,38 +221,33 @@ void crea_cilindro(MeshP& cilindro)
 
 }
 
-void crea_piano_suddiviso(MeshP& piano_suddiviso)
+void crea_piano_suddiviso(int resolution, MeshP& piano_suddiviso)
 {
-	int N = 1000;
-
 	int i, j;
 
-	for (i = 0; i < N; i++) {
-		for (j = 0; j < N; j++) {
-			piano_suddiviso.vertices.push_back(vec3(float(i), 0.0f, float(j)));
+	for (i = 0; i < resolution; i++) {
+		for (j = 0; j < resolution; j++) {
+			piano_suddiviso.vertices.push_back(vec3(float(i) / resolution, 0.0f, float(j) / resolution));
 			piano_suddiviso.normals.push_back(vec3(0.0, 1.0, 0.0));
-			piano_suddiviso.texCoords.push_back(vec2(float(i), float(i)));
+			piano_suddiviso.texCoords.push_back(vec2(float(i) / resolution, float(i) / resolution));
 		}
 	}
 	int cont = -1;
 
-	for (i = 0; i <= pow(N, 2) - (N + 1); i++) {
+	for (i = 0; i <= pow(resolution, 2) - (resolution + 1); i++) {
 
-		j = i % (N);
+		j = i % (resolution);
 
-		if (j != N - 1) {
+		if (j != resolution - 1) {
 			piano_suddiviso.indici.push_back(i);
 			piano_suddiviso.indici.push_back(i + 1);
-			piano_suddiviso.indici.push_back(i + N + 1);
+			piano_suddiviso.indici.push_back(i + resolution + 1);
 
-			piano_suddiviso.indici.push_back(i + N + 1);
+			piano_suddiviso.indici.push_back(i + resolution + 1);
 			piano_suddiviso.indici.push_back(i);
-			piano_suddiviso.indici.push_back(i + N);
-
+			piano_suddiviso.indici.push_back(i + resolution);
 		}
-
 	}
-
 }
 
 
