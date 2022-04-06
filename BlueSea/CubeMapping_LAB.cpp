@@ -218,7 +218,7 @@ void INIT_VAO(void)
 
 	//Carica modello obj barca
 	MeshP barca = {};
-	bool modello = loadOBJ("bout2.obj", barca);
+	bool modello = loadOBJ("boat.model", barca);
 	crea_VAO_obj(&barca);
 	ObjectP objBarca = {
 		{
